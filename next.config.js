@@ -1,4 +1,4 @@
-const withNextra = require('nextra')('./components/cookbook.jsx')
+const withNextra = require('nextra')('./src/components/Cookbook.jsx')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
