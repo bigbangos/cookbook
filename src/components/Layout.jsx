@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 
 import { Hero } from '@/components/Hero'
 import { Logo, Logomark } from '@/components/Logo'
@@ -10,63 +9,7 @@ import { Navigation } from '@/components/Navigation'
 import { Prose } from '@/components/Prose'
 // import { Search } from '@/components/Search'
 import { ThemeSelector } from '@/components/ThemeSelector'
-
-const navigation = [
-  {
-    title: 'Introduction',
-    links: [
-      { title: 'Getting started', href: '/' },
-      { title: 'Installation', href: '/docs/installation' },
-    ],
-  },
-  {
-    title: 'Core concepts',
-    links: [
-      { title: 'Understanding caching', href: '/docs/understanding-caching' },
-      {
-        title: 'Predicting user behavior',
-        href: '/docs/predicting-user-behavior',
-      },
-      { title: 'Basics of time-travel', href: '/docs/basics-of-time-travel' },
-      {
-        title: 'Introduction to string theory',
-        href: '/docs/introduction-to-string-theory',
-      },
-      { title: 'The butterfly effect', href: '/docs/the-butterfly-effect' },
-    ],
-  },
-  {
-    title: 'Advanced guides',
-    links: [
-      { title: 'Writing plugins', href: '/docs/writing-plugins' },
-      { title: 'Neuralink integration', href: '/docs/neuralink-integration' },
-      { title: 'Temporal paradoxes', href: '/docs/temporal-paradoxes' },
-      { title: 'Testing', href: '/docs/testing' },
-      { title: 'Compile-time caching', href: '/docs/compile-time-caching' },
-      {
-        title: 'Predictive data generation',
-        href: '/docs/predictive-data-generation',
-      },
-    ],
-  },
-  {
-    title: 'API reference',
-    links: [
-      { title: 'CacheAdvance.predict()', href: '/docs/cacheadvance-predict' },
-      { title: 'CacheAdvance.flush()', href: '/docs/cacheadvance-flush' },
-      { title: 'CacheAdvance.revert()', href: '/docs/cacheadvance-revert' },
-      { title: 'CacheAdvance.regret()', href: '/docs/cacheadvance-regret' },
-    ],
-  },
-  {
-    title: 'Contributing',
-    links: [
-      { title: 'How to contribute', href: '/docs/how-to-contribute' },
-      { title: 'Architecture guide', href: '/docs/architecture-guide' },
-      { title: 'Design principles', href: '/docs/design-principles' },
-    ],
-  },
-]
+import { usePageOpts } from '@/components/NextraPageOpts'
 
 function GitHubIcon(props) {
   return (
@@ -167,14 +110,16 @@ function useTableOfContents(tableOfContents) {
   return currentSection
 }
 
-export function Layout({ children, title, tableOfContents, isHomePage }) {
-  const router = useRouter()
+export function Layout({ children, tableOfContents, navigation }) {
+  const pageOpts = usePageOpts()
+  const title = pageOpts.frontMatter.title
+  const isHomePage = pageOpts.route === '/'
   const allLinks = navigation.flatMap((section) => section.links)
-  const linkIndex = allLinks.findIndex((link) => link.href === router.pathname)
+  const linkIndex = allLinks.findIndex((link) => link.href === pageOpts.route)
   const previousPage = allLinks[linkIndex - 1]
   const nextPage = allLinks[linkIndex + 1]
   const section = navigation.find((section) =>
-    section.links.find((link) => link.href === router.pathname)
+    section.links.find((link) => link.href === pageOpts.route)
   )
   const currentSection = useTableOfContents(tableOfContents)
 
@@ -212,7 +157,7 @@ export function Layout({ children, title, tableOfContents, isHomePage }) {
             {(title || section) && (
               <header className="mb-9 space-y-1">
                 {section && (
-                  <p className="font-display text-sm font-medium text-sky-500">
+                  <p className="font-display text-sm font-medium capitalize text-sky-500">
                     {section.title}
                   </p>
                 )}
