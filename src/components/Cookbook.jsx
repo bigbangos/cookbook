@@ -1,8 +1,10 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { MDXProvider } from '@mdx-js/react'
 
 // components
 import { Layout } from '@/components/Layout'
+import { getComponents } from '@/components/MDXComponents'
 import { NextraPageOptsContextProvider } from '@/components/NextraPageOpts'
 
 export default function Cookbook(props) {
@@ -30,7 +32,9 @@ export default function Cookbook(props) {
         navigation={generateNavLinks(onlyDocsLinks.children)}
         tableOfContents={[]}
       >
-        <Content {...props} />
+        <MDXProvider components={getComponents()}>
+          <Content {...props} />
+        </MDXProvider>
       </Layout>
     </NextraPageOptsContextProvider>
   )
