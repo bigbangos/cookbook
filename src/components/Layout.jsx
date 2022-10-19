@@ -1,72 +1,15 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
 
 import { Hero } from '@/components/Hero'
 import { Logo, Logomark } from '@/components/Logo'
 import { MobileNavigation } from '@/components/MobileNavigation'
 import { Navigation } from '@/components/Navigation'
 import { Prose } from '@/components/Prose'
-import { Search } from '@/components/Search'
+// import { Search } from '@/components/Search'
 import { ThemeSelector } from '@/components/ThemeSelector'
-
-const navigation = [
-  {
-    title: 'Introduction',
-    links: [
-      { title: 'Getting started', href: '/' },
-      { title: 'Installation', href: '/docs/installation' },
-    ],
-  },
-  {
-    title: 'Core concepts',
-    links: [
-      { title: 'Understanding caching', href: '/docs/understanding-caching' },
-      {
-        title: 'Predicting user behavior',
-        href: '/docs/predicting-user-behavior',
-      },
-      { title: 'Basics of time-travel', href: '/docs/basics-of-time-travel' },
-      {
-        title: 'Introduction to string theory',
-        href: '/docs/introduction-to-string-theory',
-      },
-      { title: 'The butterfly effect', href: '/docs/the-butterfly-effect' },
-    ],
-  },
-  {
-    title: 'Advanced guides',
-    links: [
-      { title: 'Writing plugins', href: '/docs/writing-plugins' },
-      { title: 'Neuralink integration', href: '/docs/neuralink-integration' },
-      { title: 'Temporal paradoxes', href: '/docs/temporal-paradoxes' },
-      { title: 'Testing', href: '/docs/testing' },
-      { title: 'Compile-time caching', href: '/docs/compile-time-caching' },
-      {
-        title: 'Predictive data generation',
-        href: '/docs/predictive-data-generation',
-      },
-    ],
-  },
-  {
-    title: 'API reference',
-    links: [
-      { title: 'CacheAdvance.predict()', href: '/docs/cacheadvance-predict' },
-      { title: 'CacheAdvance.flush()', href: '/docs/cacheadvance-flush' },
-      { title: 'CacheAdvance.revert()', href: '/docs/cacheadvance-revert' },
-      { title: 'CacheAdvance.regret()', href: '/docs/cacheadvance-regret' },
-    ],
-  },
-  {
-    title: 'Contributing',
-    links: [
-      { title: 'How to contribute', href: '/docs/how-to-contribute' },
-      { title: 'Architecture guide', href: '/docs/architecture-guide' },
-      { title: 'Design principles', href: '/docs/design-principles' },
-    ],
-  },
-]
+import { usePageOpts } from '@/components/NextraPageOpts'
 
 function GitHubIcon(props) {
   return (
@@ -108,12 +51,15 @@ function Header({ navigation }) {
           <Logo className="hidden h-9 w-auto fill-slate-700 dark:fill-sky-100 lg:block" />
         </Link>
       </div>
-      <div className="-my-5 mr-6 sm:mr-8 md:mr-0">
-        <Search />
-      </div>
+      <div className="-my-5 mr-6 sm:mr-8 md:mr-0">{/* <Search /> */}</div>
       <div className="relative flex basis-0 justify-end gap-6 sm:gap-8 md:flex-grow">
         <ThemeSelector className="relative z-10" />
-        <Link href="https://github.com" className="group" aria-label="GitHub">
+        <Link
+          href="https://github.com/bigbangos/cookbook"
+          target="_blank"
+          className="group"
+          aria-label="GitHub"
+        >
           <GitHubIcon className="h-6 w-6 fill-slate-400 group-hover:fill-slate-500 dark:group-hover:fill-slate-300" />
         </Link>
       </div>
@@ -164,15 +110,18 @@ function useTableOfContents(tableOfContents) {
   return currentSection
 }
 
-export function Layout({ children, title, tableOfContents, isHomePage }) {
-  const router = useRouter()
+export function Layout({ children, tableOfContents, navigation }) {
+  const pageOpts = usePageOpts()
+  const title = pageOpts.frontMatter.title
+  const isHomePage = pageOpts.route === '/'
   const allLinks = navigation.flatMap((section) => section.links)
-  const linkIndex = allLinks.findIndex((link) => link.href === router.pathname)
+  const linkIndex = allLinks.findIndex((link) => link.href === pageOpts.route)
   const previousPage = allLinks[linkIndex - 1]
   const nextPage = allLinks[linkIndex + 1]
   const section = navigation.find((section) =>
-    section.links.find((link) => link.href === router.pathname)
+    section.links.find((link) => link.href === pageOpts.route)
   )
+  const sectionTitle = pageOpts.frontMatter.sectionTitle ?? section?.title
   const currentSection = useTableOfContents(tableOfContents)
 
   function isActive(section) {
@@ -206,13 +155,11 @@ export function Layout({ children, title, tableOfContents, isHomePage }) {
 
         <div className="min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 lg:pl-8 xl:px-16">
           <article>
-            {(title || section) && (
+            {(title || sectionTitle) && (
               <header className="mb-9 space-y-1">
-                {section && (
-                  <p className="font-display text-sm font-medium text-sky-500">
-                    {section.title}
-                  </p>
-                )}
+                <p className="font-display text-sm font-medium capitalize text-sky-500">
+                  {sectionTitle}
+                </p>
                 {title && (
                   <h1 className="font-display text-3xl tracking-tight text-slate-900 dark:text-white">
                     {title}

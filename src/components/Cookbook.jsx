@@ -1,7 +1,9 @@
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 
 // components
 import { Layout } from '@/components/Layout'
+import { NextraPageOptsContextProvider } from '@/components/NextraPageOpts'
 
 export default function Cookbook(props) {
   const router = useRouter()
@@ -13,14 +15,40 @@ export default function Cookbook(props) {
 
   const { pageOpts, Content } = context
   const { frontMatter } = pageOpts
+  const onlyDocsLinks = pageOpts.pageMap.find(
+    (opts) => opts.kind === 'Folder' && opts.name === 'docs'
+  )
+
+  const pageTitle = `${frontMatter.title} - Recipes`
 
   return (
-    <Layout
-      title={frontMatter.title}
-      tableOfContents={[]}
-      isHomePage={pageOpts.route === '/'}
-    >
-      <Content {...props} />
-    </Layout>
+    <NextraPageOptsContextProvider value={pageOpts}>
+      <Head>
+        <title>{pageTitle}</title>
+      </Head>
+      <Layout
+        navigation={generateNavLinks(onlyDocsLinks.children)}
+        tableOfContents={[]}
+      >
+        <Content {...props} />
+      </Layout>
+    </NextraPageOptsContextProvider>
   )
+}
+
+function generateNavLinks(pageMap) {
+  return pageMap
+    .map((page) => {
+      if (page.kind === 'Folder') {
+        return {
+          title: page.name,
+          links: generateNavLinks(page.children),
+        }
+      }
+
+      if (page.kind === 'MdxPage') {
+        return { title: page.frontMatter.title, href: page.route }
+      }
+    })
+    .filter(Boolean)
 }
