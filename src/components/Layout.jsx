@@ -77,7 +77,7 @@ function GitHubIcon(props) {
 }
 
 function Header({ navigation }) {
-  let [isScrolled, setIsScrolled] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     function onScroll() {
@@ -122,30 +122,30 @@ function Header({ navigation }) {
 }
 
 function useTableOfContents(tableOfContents) {
-  let [currentSection, setCurrentSection] = useState(tableOfContents[0]?.id)
+  const [currentSection, setCurrentSection] = useState(tableOfContents[0]?.id)
 
-  let getHeadings = useCallback((tableOfContents) => {
+  const getHeadings = useCallback((tableOfContents) => {
     return tableOfContents
       .flatMap((node) => [node.id, ...node.children.map((child) => child.id)])
       .map((id) => {
-        let el = document.getElementById(id)
+        const el = document.getElementById(id)
         if (!el) return
 
-        let style = window.getComputedStyle(el)
-        let scrollMt = parseFloat(style.scrollMarginTop)
+        const style = window.getComputedStyle(el)
+        const scrollMt = parseFloat(style.scrollMarginTop)
 
-        let top = window.scrollY + el.getBoundingClientRect().top - scrollMt
+        const top = window.scrollY + el.getBoundingClientRect().top - scrollMt
         return { id, top }
       })
   }, [])
 
   useEffect(() => {
     if (tableOfContents.length === 0) return
-    let headings = getHeadings(tableOfContents)
+    const headings = getHeadings(tableOfContents)
     function onScroll() {
-      let top = window.scrollY
+      const top = window.scrollY
       let current = headings[0].id
-      for (let heading of headings) {
+      for (const heading of headings) {
         if (top >= heading.top) {
           current = heading.id
         } else {
@@ -164,17 +164,16 @@ function useTableOfContents(tableOfContents) {
   return currentSection
 }
 
-export function Layout({ children, title, tableOfContents }) {
-  let router = useRouter()
-  let isHomePage = router.asPath === '/'
-  let allLinks = navigation.flatMap((section) => section.links)
-  let linkIndex = allLinks.findIndex((link) => link.href === router.pathname)
-  let previousPage = allLinks[linkIndex - 1]
-  let nextPage = allLinks[linkIndex + 1]
-  let section = navigation.find((section) =>
+export function Layout({ children, title, tableOfContents, isHomePage }) {
+  const router = useRouter()
+  const allLinks = navigation.flatMap((section) => section.links)
+  const linkIndex = allLinks.findIndex((link) => link.href === router.pathname)
+  const previousPage = allLinks[linkIndex - 1]
+  const nextPage = allLinks[linkIndex + 1]
+  const section = navigation.find((section) =>
     section.links.find((link) => link.href === router.pathname)
   )
-  let currentSection = useTableOfContents(tableOfContents)
+  const currentSection = useTableOfContents(tableOfContents)
 
   function isActive(section) {
     if (section.id === currentSection) {
@@ -204,6 +203,7 @@ export function Layout({ children, title, tableOfContents }) {
             />
           </div>
         </div>
+
         <div className="min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 lg:pl-8 xl:px-16">
           <article>
             {(title || section) && (
@@ -255,6 +255,7 @@ export function Layout({ children, title, tableOfContents }) {
             )}
           </dl>
         </div>
+
         <div className="hidden xl:sticky xl:top-[4.5rem] xl:-mr-6 xl:block xl:h-[calc(100vh-4.5rem)] xl:flex-none xl:overflow-y-auto xl:py-16 xl:pr-6">
           <nav aria-labelledby="on-this-page-title" className="w-56">
             {tableOfContents.length > 0 && (

@@ -4,16 +4,22 @@ import { useRouter } from 'next/router'
 import { Layout } from '@/components/Layout'
 
 export default function Cookbook(props) {
-  const { route } = useRouter()
-  const context = globalThis.__nextra_pageContext__[route]
-  if (!context) throw new Error(`No content found for ${route}.`)
+  const router = useRouter()
+  const context = globalThis.__nextra_pageContext__[router.route]
+
+  if (!context) {
+    throw new Error(`No content found for ${router.route}.`)
+  }
 
   const { pageOpts, Content } = context
   const { frontMatter } = pageOpts
-  console.log('pageOpts', pageOpts)
 
   return (
-    <Layout title={frontMatter.title} tableOfContents={[]}>
+    <Layout
+      title={frontMatter.title}
+      tableOfContents={[]}
+      isHomePage={pageOpts.route === '/'}
+    >
       <Content {...props} />
     </Layout>
   )
