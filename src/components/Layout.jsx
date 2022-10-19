@@ -121,6 +121,7 @@ export function Layout({ children, tableOfContents, navigation }) {
   const section = navigation.find((section) =>
     section.links.find((link) => link.href === pageOpts.route)
   )
+  const sectionTitle = pageOpts.frontMatter.sectionTitle ?? section?.title
   const currentSection = useTableOfContents(tableOfContents)
 
   function isActive(section) {
@@ -154,13 +155,11 @@ export function Layout({ children, tableOfContents, navigation }) {
 
         <div className="min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 lg:pl-8 xl:px-16">
           <article>
-            {(title || section) && (
+            {(title || sectionTitle) && (
               <header className="mb-9 space-y-1">
-                {section && (
-                  <p className="font-display text-sm font-medium capitalize text-sky-500">
-                    {section.title}
-                  </p>
-                )}
+                <p className="font-display text-sm font-medium capitalize text-sky-500">
+                  {sectionTitle}
+                </p>
                 {title && (
                   <h1 className="font-display text-3xl tracking-tight text-slate-900 dark:text-white">
                     {title}
