@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 
 // components
@@ -20,6 +21,9 @@ export default function Cookbook(props) {
       tableOfContents={[]}
       isHomePage={pageOpts.route === '/'}
     >
+      <Head>
+        <title>{frontMatter.title} &mdash; Aptos Recipes</title>
+      </Head>
       <Content {...props} />
     </Layout>
   )
