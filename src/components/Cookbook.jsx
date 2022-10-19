@@ -19,15 +19,17 @@ export default function Cookbook(props) {
     (opts) => opts.kind === 'Folder' && opts.name === 'docs'
   )
 
+  const pageTitle = `${frontMatter.title} - Recipes`
+
   return (
     <NextraPageOptsContextProvider value={pageOpts}>
+      <Head>
+        <title>{pageTitle}</title>
+      </Head>
       <Layout
         navigation={generateNavLinks(onlyDocsLinks.children)}
         tableOfContents={[]}
       >
-        <Head>
-          <title>{frontMatter.title} &mdash; Aptos Recipes</title>
-        </Head>
         <Content {...props} />
       </Layout>
     </NextraPageOptsContextProvider>
