@@ -62,26 +62,35 @@ module cookbook::utility {
   const EINVALID_INPUT: u64 = 0;
 
   public fun addressToString(input: address): string::String{
+	//convert address to vector<u8> bytes
 	let addr_bytes = bcs::to_bytes(&input);
-	//let i = 0;
+	//empty vector to hold result
 	let result = vector::empty<u8>();
+	//loop through each of the bytes in the vector
 	while (vector::length<u8>(&addr_bytes)>0) {
+		//convert each byte into a 2-byte vector of ASCII values
 		let digit_vec = u8toASCIIvec(vector::pop_back(&mut addr_bytes));
+		//push to result
 		vector::append(&mut result, digit_vec);
 	};
+	//reverse the order as we pushed last ot first
 	vector::reverse(&mut result);
 	string::utf8(result)
   } 
 
   fun u8toASCIIvec(input: u8): vector<u8> {
     let result = vector::empty<u8>();
+	//get the first half of the hex by mod 16 and convert it to ASCII
 	vector::push_back(&mut result, u4toASCIIu8(input % 16));
+	//second half
     vector::push_back(&mut result, u4toASCIIu8(input / 16));
     result
   }
 
   fun u4toASCIIu8(input: u8): u8 {
+	//since there isn't an acutal u4 type, ensure the u8 value is 15 or less
     assert!(input<=15, EINVALID_INPUT);
+	//convert value to ASCII equivalent
     if (input<=9) (48 + input) // 0 - 9 => ASCII 48 to 57
     else (55 + input) //10 - 15 => ASCII 65 to 70
   }
@@ -93,6 +102,5 @@ module cookbook::utility {
 	assert!(string::bytes(&test_string) == &b"0000000000000000000000000000000000000000000000001234567890ABCDEF", 1);
     debug::print<string::String>(&test_string);
   }
-
 }
 ```
