@@ -9,37 +9,37 @@ Simple function to convert a u64 integer into its ASCII string equivalent.
 
 ```
 module cookbook::utility {
-	use std::string::{Self, String};
-	use std::debug;
-	use std::vector;
+    use std::string::{Self, String};
+    use std::debug;
+    use std::vector;
 
-	fun u64_to_string(input: u64): String{
-		//create empty vector to hold digit ASCII values
-		let result = vector::empty();
+    fun u64_to_string(input: u64): String{
+        //create empty vector to hold digit ASCII values
+        let result = vector::empty();
 
-		//loop while input value is 10 or higher
-		while (input/10 > 0){
-			//modulo the input value by 10 to get the last digit
-			let digit = input%10;
-			//add 48 to the digit value to get ASCII (where ASCII "0" = 48)
-			//and push it into the result array
-			vector::push_back(&mut result, ((digit+48) as u8));
-			//divide input by 10 to get to the next digit then loop
-			input = input/10;
-		};
-		//at this point, input will only be holding one digit remaining
-		vector::push_back(&mut result, ((input+48) as u8));
-		//resverse the order because we pushed the digits last to first
-		vector::reverse(&mut result);
-		//convert the u8 array to utf8 string and return
-		string::utf8(result)
-	}
+        //loop while input value is 10 or higher
+        while (input/10 > 0){
+            //modulo the input value by 10 to get the last digit
+            let digit = input%10;
+            //add 48 to the digit value to get ASCII (where ASCII "0" = 48)
+            //and push it into the result array
+            vector::push_back(&mut result, ((digit+48) as u8));
+            //divide input by 10 to get to the next digit then loop
+            input = input/10;
+        };
+        //at this point, input will only be holding one digit remaining
+        vector::push_back(&mut result, ((input+48) as u8));
+        //resverse the order because we pushed the digits last to first
+        vector::reverse(&mut result);
+        //convert the u8 array to utf8 string and return
+        string::utf8(result)
+    }
 
-	#[test]
-	fun test_conversion() {
-		let myString = u64_to_string(1234567890u64);
-		assert!(string::bytes(&myString) == &b"1234567890", 1);
-		debug::print(&myString);
-	}
+    #[test]
+    fun test_conversion() {
+        let myString = u64_to_string(1234567890u64);
+        assert!(string::bytes(&myString) == &b"1234567890", 1);
+        debug::print(&myString);
+    }
 }
 ```
